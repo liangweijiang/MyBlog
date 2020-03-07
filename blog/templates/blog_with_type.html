@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block blog_head %}
+    <h1 class="blog-title">Category</h1>
+{% endblock %}
+{% block blog_content %}
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="page-header">
+            {% for type in blog_types %}
+                <a href="#{{ type.type_name }}" class="btn btn-primary">{{ type }}</a>
+            {% endfor %}
+
+        </div>
+        <div class="blog-post page-header">
+            {% for blog_type in blog_types %}
+                <div id="type-distance">
+                    <h3 id="{{ blog_type.type_name }}">
+                       #{{ blog_type }}</h3>
+                </div>
+                {% for blog in  blog_type.blog_set.all %}
+                    <div class="page-header">
+                        <h4>[{{ blog_type }}]<a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h4>
+                    </div>
+                {% endfor %}
+
+
+            {% endfor %}
+
+        </div><!-- /.blog-post -->
+    </div>
+
+
+{% endblock %}
+

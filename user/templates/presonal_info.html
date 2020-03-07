@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block style %}
+    <style>
+        h2, h4, h4 > a {
+            color: #fff;
+        }
+
+        .modal-body > form > .control > .mode-control {
+            background-color: #b9b9b9;
+        }
+    </style>
+{% endblock %}
+{% block blog_head %}
+    <h2 class="blog-title" style="margin-bottom: 62px">欢迎!&nbsp;&nbsp;{{ user.username }}</h2>
+    <h4>你的邮箱:{% if user.email %}{{ user.email }}{% else %}未绑定{% endif %}&nbsp;&nbsp;
+        [{% if user.email %}<a href="javascript:bind_email()" style="color: #fff">更改绑定</a>{% else %}
+            <a href="javascript:bind_email()" style="color: #fff">绑定</a>{% endif %}]</h4>
+    <h4><a href="javascript:change_password()">[修改密码]</a></h4>
+
+{% endblock %}
+
+{% block blog_content %}
+
+    <div class="modal fade" id="email-model" tabindex="-1" role="dialog" aria-labelledby="email-model-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: rgba(230,230,230,0.2);">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">绑定邮箱</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" class="form-validate" id="bind-email-form" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group control" style="background-color: transparent;">
+                            {{ bind_form.email }}
+                            <p class="text-danger" id="email-error">{{ bind_form.email.errors.as_text }}</p>
+                        </div>
+                        <div class="form-group control" style="background-color: transparent;">
+                            {{ bind_form.verification_code }}
+                            <p class="text-danger" id="code-error">{{ bind_form.verification_code.errors.as_text }}</p>
+                        </div>
+                        <p id="tip" class="text-danger">{{ form.non_field_errors.as_text }}</p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+                            <button type="button" class="btn btn-primary" id="bind-email">绑定</button>
+                            <button type="button" id="send-vcode" class="btn btn-primary pull-left">获取验证码</button>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="password-model" tabindex="-1" role="dialog" aria-labelledby="password-model-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: rgba(230,230,230,0.2);">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">更改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'change_password' %}" method="post" class="form-validate" novalidate>
+                        {% csrf_token %}
+                            <div class="form-group control" style="background-color: transparent;">
+                                {{ password_form.old_password }}
+                                <p class="text-danger" id="old-password">{{ password_form.old_password.errors.as_text }}</p>
+                            </div>
+                            <div class="form-group control" style="background-color: transparent;">
+                                {{ password_form.new_password }}
+                                <p class="text-danger" id="new-password">{{ password_form.new_password.errors.as_text }}</p>
+                            </div>
+                            <div class="form-group control" style="background-color: transparent;">
+                                {{ password_form.re_password }}
+                                <p class="text-danger" id="re-password">{{ password_form.re_password.errors.as_text }}</p>
+                            </div>
+                        <p id="pwd-tip" class="text-danger">{{ form.non_field_errors.as_text }}</p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+                            <button type="button" class="btn btn-primary" id="change-password">更改</button>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    {% load static %}
+    <script src="{% static "jquery/jquery-3.4.1.js" %}"></script>
+    <script>
+        function bind_email() {
+            $('#email-model').modal('show');
+        }
+
+        function change_password() {
+            $('#password-model').modal('show');
+        }
+    </script>
+    <script>
+        $("#send-vcode").click(function () {
+            var email = $("#id_email").val();
+            if (email == "") {
+                $("#tip").text('* 邮箱不能为空');
+                return false;
+            }
+            $.ajax({
+                url: "{% url 'send_verification_code' %}",
+                type: 'GET',
+                data: {'email': email,
+                    'send_for': 'bind_email_code'
+                    },
+                cache: false,
+                success: function (data) {
+                    if (data['status'] == 'ERROR') {
+                        alert(data['status']);
+                    }
+                },
+
+            });
+            // 把按钮变灰
+            $(this).addClass('disabled');
+            $(this).attr('disabled', true);
+            var time = 30;
+            $(this).text(time + 's后再次发送');
+            var interval = setInterval(() => {
+                if (time <= 0) {
+                    clearInterval(interval);
+                    $(this).removeClass('disabled');
+                    $(this).attr('disabled', false);
+                    $(this).text('发送验证码');
+                    return false;
+                }
+
+                time--;
+                $(this).text(time + 's后再次发送');
+            }, 1000);
+
+        });
+        $('#bind-email').click(function () {
+            $.ajax({
+                url: "{% url 'bind_email' %}",
+                type: "POST",
+                data: $(this).parent().parent().serialize(),
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data['status'] == 'SUCCESS') {
+                        location.href = '{% url 'personal_info' %}'
+                    } else {
+                        $('#tip').text(data['errors']['__all__']);
+                        $('#email-error').text(data['errors']['email']);
+                        $('#code-error').text(data['errors']['verification_code']);
+                    }
+                },
+                error: function () {
+
+                }
+            })
+        });
+        $('#change-password').click(function () {
+            $.ajax({
+                url: "{% url 'change_password' %}",
+                type: "POST",
+                data: $(this).parent().parent().serialize(),
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data['status'] == 'SUCCESS') {
+                        location.href = '{% url 'login' %}'
+                    } else {
+                        $('#pwd-tip').text(data['errors']['__all__']);
+                        $('#old-password').text(data['errors']['old_password']);
+                        $('#new-password').text(data['errors']['new_password']);
+                        $('#re-password').text(data['errors']['re_password']);
+                    }
+                },
+                error: function () {
+
+                }
+            })
+        })
+    </script>
+{% endblock %}

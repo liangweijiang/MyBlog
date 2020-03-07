@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% block blog_head %}
+    <h2 class="blog-title" style="color: #fff">{{ blog.title }}</h2>
+    <h3 style="color: #fff">#{{ blog.blog_type.type_name }}</h3>
+{% endblock %}
+
+{% block blog_content %}
+    {% load likes_tags %}
+    {% load static %}
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+
+    {#    <script src="{% static 'prism/prism_patched.min.js' %}"></script>#}
+    {#    <link rel="stylesheet" href="{% static 'prism/prism_patched.min.css' %}">#}
+    <div class="col-sm-10 col-sm-offset-1">
+    <div class="blog-post">
+        {#        <h2 class="blog-post-title">{{ blog.title }}</h2>#}
+        <p id="blog-body"> {{ blog.content|safe }}</p>
+    </div><!-- /.blog-post -->
+    <nav class="page-header">
+        <ul class="pager">
+            <li class="next">
+                {% if previous_blog %}
+                    <a href="{% url 'blog_detail' previous_blog.pk %}" data-toggle="tooltip" data-placement="top"
+                       title="{{ previous_blog.title }}" class="btn">
+                        PRREVIOUS<span aria-hidden="true">&rarr;</span>
+                    </a>
+                {% endif %}
+            </li>
+            <li class="previous">
+                {% if next_blog %}
+                    <a href="{% url 'blog_detail' next_blog.pk %}" data-toggle="tooltip" data-placement="top"
+                       title="{{ next_blog.title }}">
+                        <span aria-hidden="true"> &larr;</span>NEXT
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+    <div>
+        {% load comment_tags %}
+        {% if user.is_authenticated %}
+            <form id="comment_form" action="" method="POST"
+                  style="overflow:hidden">
+                <div id="reply_content_container" style="display:none;">
+                    <p id="reply_to_user"></p>
+                    <div id="reply_content"></div>
+                </div>
+                {% csrf_token %}
+                {% get_comment_form blog as comment_form %}
+                {% for field in comment_form %}
+                    {{ field }}
+                    <p class="text-danger">{{ form.errors.as_text }}</p>
+                {% endfor %}
+                <span id="comment_error" class="text-danger pull-left"></span>
+                <button type="submit" class="btn pull-right btn-dark">评论</button>
+                <button type="button" class="btn pull-right btn-danger hide" id="cancel-reply"
+                        style="margin-right: 6px;">取消
+                </button>
+            </form>
+        {% else %}
+            <div>
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center"><a
+                            href="{% url 'login' %}?next={{ request.get_full_path }}"
+                            class="btn btn-primary">登录</a>之后才能评论
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+    <div class="page-header"><h4>评论({% get_comment_count blog %})</h4></div>
+
+    <div class="comment-area">
+        <div id="comment_list" style="overflow: hidden">
+            {% get_comment_list blog as comments %}
+            {% for comment in comments %}
+                <div class="comment page-header">
+                    <p><i class="iconfont icon-touxiang pull-left"
+                          aria-hidden="true" style="margin-right: 5px"
+                          id="{{ comment.id }}-reply-user"></i><span>{{ comment.user.username }}</span>
+                        <span class="pull-right">{{ comment.comment_time|date:"Y-m-d H:i:s" }}</span></p>
+                    <div id="comment_{{ comment.pk }}">{{ comment.text|safe }}</div>
+                    <div style="margin-bottom: 5px" class="text-right" id="comment-message">
+                        <a href="javascript:void(0)"
+                           onclick="likeChange(this,'{% get_content_type comment %}',{{ comment.pk }})">
+                            <i class="iconfont {% get_like_status comment %}"></i>点赞(<span
+                                class="like">{% get_like_count comment %}</span>)</a>
+                        <a href="javascript:LookReply({{ comment.id }})" id="{{ comment.id }}-all-reply"><i
+                                class="iconfont icon-review">
+                        </i>查看回复（{% get_reply_count comment %}）</a>
+                        <a href="javascript:reply({{ comment.id }})"><i class="iconfont icon-huifu"></i>回复</a>
+                    </div>
+                    <div class="reply-area hide">
+                        <div class="text-right page-header" style="margin: 10px 10px">最新|最早</div>
+                        <div class="reply-list" id="root_{{ comment.pk }}">
+                            {% for reply in comment.root_comment.all %}
+                                <div class="reply">
+                                    <p><i class="iconfont icon-touxiang pull-left"
+                                          aria-hidden="true" style="margin-right: 5px"
+                                          id="{{ reply.id }}-reply-user"></i><span>{{ comment.user.username }}</span>
+                                        <span class="pull-right">{{ reply.comment_time|date:"Y-m-d H:i:s" }}</span></p>
+                                    <div style="margin: 5px 0"><a
+                                            href="javascript:void(0)"
+                                            style="color: #adadad">@{{ reply.parent.user.username }}</a>
+                                        <div id="comment_{{ reply.pk }}"
+                                             style="margin: 5px 10px">{{ reply.text|safe }}</div>
+                                    </div>
+                                    <div class="text-right" id="comment-message">
+                                        <a href="javascript:void(0)"
+                                           onclick="likeChange(this,'{% get_content_type reply %}',{{ reply.pk }})">
+                                            <i class="iconfont {% get_like_status reply %}"></i>点赞(<span
+                                                class="like">{% get_like_count reply %}</span>)</a>
+                                        <a href="javascript:reply({{ reply.id }})"
+                                           style="color: rgb(84, 110, 122);font-size: 12px;">
+                                            <i class="iconfont icon-huifu"></i>回复</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+            {% empty %}
+                <span id="no-comment" class="panel-body">暂无评论</span>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(".django-ckeditor-widget").removeAttr('style');
+    </script>
+
+    <script type="text/javascript">
+
+        $("#comment_form").submit(function () {
+            // 判断是否为空
+            $("#comment_error").text('');
+            if (CKEDITOR.instances["id_text"].document.getBody().getText().trim() == '') {
+                $("#comment_error").text('评论内容不能为空');
+                return false;
+            }
+            //更新数据到textarea
+            CKEDITOR.instances['id_text'].updateElement();
+            $.ajax({
+                url: "{% url 'update_comment' %}",
+                type: 'POST',
+                data: $(this).serialize(),
+                cache: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data['status'] == 'SUCCESS') {
+                        if ($('#reply_comment_id').val() == '0') {
+                            let comment_html = `<div class="comment page-header">
+            <p><i class="iconfont icon-touxiang pull-left"
+                     aria-hidden="true" style="margin-right: 5px" id="${data['pk']}-reply-user"></i><span>${data['username']}</span>
+                <span class="pull-right">${data['comment_time']}</span></p>
+            <div id="comment_${data['pk']}">${data['text']}</div>
+               <div style="margin-bottom: 5px" class="text-right" id="comment-message">
+               <a href="javascript:void(0)" onclick="likeChange(this,'${data['content_type']}',${data['pk']})">
+                            <i class="iconfont icon-dianzan1"></i>点赞(<span class="like">0</span>)</a>
+                        <a href="javascript:LookReply(${data['pk']})" id="${data['pk']}-all-reply"><i class="iconfont icon-review"></i>查看回复（${data['reply_count']}）</a>
+                        <a href="javascript:reply(${data['pk']})"><i class="iconfont icon-huifu"></i>回复</a>
+                    </div>
+                        <div class="reply-area hide" >
+                        <div class="text-right page-header" style="margin: 10px 10px">最新|最早</div>
+                        <div class="reply-list" id="root_${data['pk']}">
+                        </div></div></div>`;
+                            $("#comment_list").prepend(comment_html);
+                        }
+                        else {
+                            let reply_html = `<div class="reply" style="margin-top: 10px">
+                    <p><i class="iconfont icon-touxiang pull-left"
+                             aria-hidden="true" style="margin-right: 5px"
+                             id="${data['pk']}-reply-user"></i><span>${data['username']}</span>
+                        <span class="pull-right">${data['comment_time']}</span></p>
+                    <div style="margin: 5px 0"><a
+                            href="javascript:void(0)" style="color: #adadad">@${data['username']}</a>
+                        <div id="comment_${data['pk']}" style="margin: 5px 10px">${data['text']}</div>
+                    </div>
+                    <div class="text-right page-header" style="margin: 10px 10px" id="comment-message">
+                    <a href="javascript:void(0)" onclick="likeChange(this,'${data['content_type']}',${data['pk']})">
+                            <i class="iconfont icon-dianzan1"></i>点赞(<span class="like">0</span>)</a>
+                    <i class="iconfont icon-huifu"></i><a href="javascript:reply(${data['pk']})">回复</a>
+                    </div>`;
+                            $("#root_" + data['root_pk']).prepend(reply_html).parent().toggleClass('show');
+                            $('#' + data['root_pk'] + '-all-reply').text(`查看回复（${data['reply_count']})`)
+                        }
+                        // 清空编辑框的内容
+                        CKEDITOR.instances['id_text'].setData('');
+                        $('#reply_content_container').hide();
+                        $('#reply_comment_id').val('0');
+                        $('#no-comment').remove();
+                        $("#comment_error").text(data['mail_mes']);
+
+                    }
+                    else {
+                        // 显示错误信息
+                        $("#comment_error").text(data['message']);
+                    }
+
+                },
+                error: function (xhr) {
+                    console.log(xhr);
+                }
+
+            });
+            return false;
+        });
+
+
+        function reply(reply_comment_id) {
+            // 设置值
+            $('#reply_comment_id').val(reply_comment_id);
+            var html = $("#comment_" + reply_comment_id).html();
+            $('#reply_content').html(html);
+            var to_user = $('#' + reply_comment_id + '-reply-user').next().html();
+            let user_html = `<a href="javascript:void(0)" style="color: #adadad">@${to_user}</a>&nbsp;&nbsp;&nbsp;for`;
+            $('#reply_to_user').html(user_html);
+            $('#reply_content_container').show();
+
+            $('html').animate({scrollTop: $('#comment_form').offset().top - 60}, 300, function () {
+                CKEDITOR.instances['id_text'].focus();
+            });
+            $('#cancel-reply').removeClass('hide')
+        }
+
+        $('#cancel-reply').click(function () {
+            CKEDITOR.instances['id_text'].setData('');
+            $('#reply_content_container').hide();
+            $('#reply_comment_id').val('0');
+        });
+
+        function LookReply(reply_id) {
+            $('#root_' + reply_id).parent().toggleClass('show')
+        }
+
+        function likeChange(obj, content_type, object_id) {
+            var is_like = obj.getElementsByClassName('icon-dianzan').length == 0
+            $.ajax({
+                url: "{% url 'like_change' %}",
+                type: 'GET',
+                data: {
+                    content_type: content_type,
+                    object_id: object_id,
+                    is_like: is_like
+                },
+                cache: false,
+                success: function (data) {
+                    console.log(data['code']);
+                    if (data['status'] == 'SUCCESS') {
+                        var element = $(obj.getElementsByClassName('iconfont'));
+                        if (is_like) {
+                            element.removeClass('icon-dianzan1');
+                            element.addClass('icon-dianzan')
+                        } else {
+                            element.removeClass('icon-dianzan');
+                            element.addClass('icon-dianzan1')
+                        }
+                        var liked = $(obj.getElementsByClassName('like'));
+                        liked.text(data['like_count']);
+                    } else {
+                        alert(data['message']);
+                    }
+
+                },
+                error: function (data) {
+                    console.log(data)
+                }
+            })
+        }
+
+    </script>
+{% endblock script %}

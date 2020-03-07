@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Blog's Login</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="all,follow">
+    <link rel="icon" href="https://liangweijiang.github.io/avatar/lwj01.jpg">
+    <link rel="stylesheet" href="https://www.jq22.com/jquery/bootstrap-4.2.1.css">
+
+    <link rel="stylesheet" href="{% static 'css/style.default.css' %}" id="theme-stylesheet">
+    <style>
+        #code-container{
+            position: relative;
+        }
+        #code{
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+        #v-code:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="page login-page">
+    <div class="container d-flex align-items-center">
+        <div class="form-holder has-shadow">
+            <div class="row">
+                <!-- Logo & Information Panel-->
+                <div class="col-lg-6">
+                    <div class="info d-flex align-items-center">
+                        <div class="content">
+                            <div class="logo">
+                                <h1>欢迎登录</h1>
+                            </div>
+                            <h2>Jiang's Blog[<a href="{% url 'index' %}" style="color: gray">return Home</a>]</h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- Form Panel    -->
+                <div class="col-lg-6 bg-white">
+                    <div class="form d-flex align-items-center">
+                        <div class="content">
+                            <form method="POST" action="" class="form-validate" id="loginFrom" novalidate>
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    {{ login_form.username }}
+                                    <p class="text-danger">{{ login_form.username.errors.as_text }}</p>
+                                </div>
+                                <div class="form-group">
+                                    {{ login_form.password }}
+                                    <p class="text-danger">{{ login_form.password.errors.as_text }}</p>
+                                </div>
+
+                                <div class="form-group" id="code-container">
+                                    <div id="code"><img src="{% url 'v_code' %}" alt="" id="v-code"></div>
+                                    <label for="v-code"></label>
+                                    <input type="text" id="account_number" name="v_code" class="input-material" placeholder="请输入验证码">
+                                    <p class="text-danger">{{ err_msg }}</p>
+                                </div>
+                                <p class="text-danger">{{ login_form.non_field_errors.as_text}}</p>
+                                <button id="login" type="submit" class="btn btn-primary">登录</button>
+                                <div style="margin-top: -40px;">
+
+                                    <div class="custom-control custom-checkbox " style="float: right;">
+                                        <input type="checkbox" class="custom-control-input" id="check2">
+                                        <label class="custom-control-label" for="check2">自动登录</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox " style="float: right;">
+                                        <input type="checkbox" class="custom-control-input" id="check1">
+                                        <label class="custom-control-label" for="check1">记住密码&nbsp;&nbsp;</label>
+                                    </div>
+                                </div>
+                            </form>
+                            <br/>
+                            <div>
+                                <small>没有账号?</small>
+                            <a href="{% url 'register' %}?next={{ request.get_full_path}}" class="signup">&nbsp;注册</a>
+                            <small class="pull-right" style="margin-left: 174px;">忘记密码?</small>
+                            <a href="{% url 'find_password' %}" class="signup pull-right">&nbsp;找回密码</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- JavaScript files-->
+<script src="{% static 'jquery/jquery-3.4.1.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-validation/jquery.validate.min.js' %}"></script><!--表单验证-->
+<!-- Main File-->
+<script src="{% static 'js/front.js' %}"></script>
+<script>
+    img = document.getElementById('v-code');
+    img.onclick = function () {
+        img.src += '?'
+    }
+</script>
+<script>
+    $(function () {
+        /*判断上次是否勾选记住密码和自动登录*/
+        var check1s = localStorage.getItem("check1");
+        var check2s = localStorage.getItem("check2");
+        var oldName = localStorage.getItem("userName");
+        var oldPass = localStorage.getItem("passWord");
+        if (check1s == "true") {
+            $("#login-username").val(oldName);
+            $("#login-password").val(oldPass);
+            $("#check1").prop('checked', true);
+        } else {
+            $("#login-username").val('');
+            $("#login-password").val('');
+            $("#check1").prop('checked', false);
+        }
+        if (check2s == "true") {
+            $("#check2").prop('checked', true);
+            $("#loginFrom").submit();
+            //location="https://www.baidu.com?userName="+oldName+"&passWord="+oldPass;//添加退出当前账号功能
+        } else {
+            $("#check2").prop('checked', false);
+        }
+        /*拿到刚刚注册的账号*/
+        /*if(localStorage.getItem("name")!=null){
+            $("#login-username").val(localStorage.getItem("name"));
+        }*/
+        /*登录*/
+        $("#login").click(function () {
+            var userName = $("#login-username").val();
+            var passWord = $("#login-password").val();
+                /*获取当前输入的账号密码*/
+                localStorage.setItem("userName", userName);
+            localStorage.setItem("passWord", passWord);
+            /*获取记住密码  自动登录的 checkbox的值*/
+            var check1 = $("#check1").prop('checked');
+            var check2 = $('#check2').prop('checked');
+            localStorage.setItem("check1", check1);
+            localStorage.setItem("check2", check2);
+        });
+
+
+    })
+
+</script>
+</body>
+</html>

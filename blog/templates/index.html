@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block blog_head %}
+    <h1 class="blog-title">Jiang's Blog</h1>
+{% endblock %}
+{% block style %}
+    <style>
+        #blog-info:hover {
+            color: rgba(47, 124, 204, 1);
+        }
+    </style>
+{% endblock %}
+{% block blog_content %}
+
+    <div class="col-sm-9 blog-main">
+        {% for blog in blogs %}
+            <div class="blog-post page-header">
+
+                <h6 class="blog-post-title"><a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h6>
+                <ul class="blog-info-description "></ul>
+
+                <p class="blog-post-meta"><a href="{% url 'blog_detail' blog.pk %}" style="color: #999999"
+                                             id="blog-info">{{ blog.content|truncatechars:380 }}</a></p>
+                <p class="blog-post-meta">
+                    {% if blog.blog_type %}
+                        <a href="/blog/type/#{{ blog.blog_type }}" class="pull-right">
+                            <i class="iconfont icon-tag-fill"></i>{{ blog.blog_type }}</a>
+                    {% endif %}
+                    <span class="glyphicon glyphicon-time blog_attribute"></span>{{ blog.created_time|date:"Y-m-d H:n:s" }}
+                    {#                    <span class="blog_attribute">post &nbsp;by &nbsp;{{ blog.author }}</span>#}
+                    <span class="blog_attribute">read ({{ blog.get_read_num }})</span>
+                </p>
+            </div><!-- /.blog-post -->
+        {% endfor %}
+        <nav>
+            <ul class="pager">
+                <li class="previous">
+                    {% if page_of_blogs.has_previous %}
+                        <a href="?page={{ page_of_blogs.previous_page_number }}">
+                            <span aria-hidden="true">&larr;</span>NEWER
+                        </a>
+                    {% endif %}
+                </li>
+                <li class="next">
+                    {% if page_of_blogs.has_next %}
+                        <a href="?page={{ page_of_blogs.next_page_number }}">
+                            OLDER<span aria-hidden="true">&rarr;</span>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+
+    </div><!-- /.blog-main -->
+
+
+
+
+{% endblock %}
+
+{% block category %}
+    <div class="col-sm-3 blog-sidebar" style="margin-top: 40px">
+        {#        <div class="sidebar-module page-header">#}
+        {#            <h4>About</h4>#}
+        {#    </div>#}
+
+        <div class="sidebar-module">
+            <h4><i class="iconfont icon-redu" aria-hidden="true">
+                Hot Blogs</i></h4>
+            <ul>
+                {% for hot_blog in hot_blogs %}
+                    <li class="category-item">
+                        <a href="{% url 'blog_detail' hot_blog.id %}">
+                            {{ hot_blog.title|truncatewords:12 }}({{ hot_blog.get_read_num }})</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+
+
+        <div class="sidebar-module">
+            <h4><i class="iconfont icon-fenlei"></i>
+                <a href="{% url 'blogs_with_date' %}">Archives</a></h4>
+            <ul>
+                {% for blog_date, blog_list in blog_dates.items %}
+                    <li class="category-item">
+                        <a href="/blog/date/#{{ blog_date|date:"Y-m" }}">
+                            {{ blog_date|date:"Y-m" }}({{ blog_list.1 }})</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+        <div class="sidebar-module">
+            <div class="page-header">
+                <h4><i class="iconfont icon-biaoqian-" aria-hidden="true">
+                    <a href="{% url 'blogs_with_type' %}">Category</a></i></h4>
+                <ul class="list">
+                    {% for blog_type in blog_types %}
+                        <li class="category-item">
+                            <a href="/blog/type/#{{ blog_type.type_name }}">{{ blog_type }}({{ blog_type.blog_count }})</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+
+    </div><!-- /.blog-sidebar -->
+{% endblock %}

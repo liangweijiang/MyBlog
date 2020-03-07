@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+{% load static %}
+<!-- saved from url=(0038)https://v3.bootcss.com/examples/blog/# -->
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="https://liangweijiang.github.io/avatar/lwj01.jpg">
+
+    <title>Jiang's Blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/font-awesome-4.7.0/css/font-awesome.css' %}" rel="stylesheet">
+    {#    <link href="{% static 'md_css/monokai.css' %}" rel="stylesheet">#}
+    <link href="{% static 'css/blog.css' %}" rel="stylesheet">
+    <link href="{% static 'css/index.css' %}" rel="stylesheet">
+    <link href="{% static 'iconfont/iconfont.css' %}" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/highlight.js/9.6.0/styles/atelier-lakeside-dark.min.css" rel="stylesheet"/>
+    <script src="https://cdn.bootcss.com/highlight.js/9.11.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="{% static 'js/index.js' %}"></script>
+    {% block style %}
+
+    {% endblock %}
+    <style>
+        #personal-nav {
+            background-color: rgba(208, 208, 208, 0) !important;
+        }
+
+        #personal-nav > li > a:hover {
+            background-color: rgba(208, 208, 208, 0);
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="jumbotron jumbotron_bgc">
+    <div class="container-fluid">
+        <nav class="navbar navbar-fixed-top navbar-transparent">
+            <a class="blog-nav-item active" href="{% url 'index' %}">Home</a>
+            <a class="blog-nav-item" href="{% url 'blogs_with_date' %}">Archives</a>
+            <a class="blog-nav-item" href="{% url 'blogs_with_type' %}">Category</a>
+            <a class="blog-nav-item" href="">About</a>
+            {% if not user.is_authenticated %}
+                <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">
+                    <a class="blog-nav-item" href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a>
+                    <a class="blog-nav-item" href="{% url 'register' %}">Register</a>
+                </div>
+            {% else %}
+                <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">
+                    <a class="blog-nav-item dropdown-toggle" href="https://v3.bootcss.com/examples/blog/#"
+                       data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false" id="personal">{{ user.username }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="personal-nav" style="border: 0">
+                        <li><a href="{% url 'personal_info' %}" style="height: 50px;line-height: 50px;">个人信息</a></li>
+                        <li><a href="{% url 'logout' %}" style="height: 50px;line-height: 50px;">Logout</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        </nav>
+        <div class="blog-header text-center" id="head_title" style="color: #fff">
+            <div>
+                {% block blog_head %}
+
+                {% endblock %}
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div class="row">
+        {% block category %}
+
+        {% endblock %}
+
+        {% block blog_content %}
+
+        {% endblock %}
+
+
+    </div>
+</div><!-- /.container -->
+
+<footer class="blog-footer">
+    <p>Blog template built for person by jiang.</p>
+    <p>
+        <a href="#">Back to top</a>
+    </p>
+</footer>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{% static "jquery/jquery-3.4.1.js" %}"></script>
+{% block script %}{% endblock script %}
+<script src="{% static 'plugins/bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/ajax_setup.js' %}"></script>
+
+</body>
+</html>

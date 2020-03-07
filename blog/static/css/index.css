@@ -1,0 +1,88 @@
+a {
+    color: black;
+}
+a:visited{
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: none;
+}
+
+
+.blog-post-meta .blog_attribute {
+    margin-left: 10px;
+}
+
+.jumbotron_bgc {
+    color: #ffffff;
+    background: url('/static/img/home.jpg') repeat 50%;
+    width: 100%;
+    height: 500px;
+}
+
+#head_title {
+    line-height: 500px;
+    margin-top: 100px;
+}
+
+.jumbotron_bgc .navbar-fixed-top a {
+    color: #ffffff;
+!important;
+}
+
+.blog-sidebar .category-item a {
+    color: gray !important;
+}
+
+.blog-sidebar .category-item {
+    color: gray !important;
+}
+
+#blog-body img {
+    width: 100% !important;
+}
+
+#comment_list .comment {
+    margin: 15px 0;
+}
+
+#comment_list .comment .reply-area {
+    background-color: #f8f8f8;
+!important;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+#comment_list .comment .reply-area .reply-list {
+    margin: 10px;
+    overflow: hidden;
+}
+
+#comment_list .comment .reply-area .reply-list .reply {
+    margin: 15px;
+}
+
+
+#comment-message>a{
+    color: rgb(84, 110, 122);
+    font-size: 12px;
+    margin-left: 1em;
+}
+
+.jumbotron_bgc .container-fluid .navbar-transparent>a{
+    font-size: 16px;
+    color: white;
+    margin-left: 20px;
+}
+#personal{
+    position: relative;
+}
+
+#personal-nav{
+    position: absolute;
+    top: 30px;
+    right: -71px;
+}
+
+
+
