@@ -25,7 +25,7 @@ DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'myblod_db',
+        'NAME': 'myblog_db',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'lwj',
