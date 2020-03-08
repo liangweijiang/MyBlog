@@ -36,47 +36,95 @@
         #personal-nav > li > a:hover {
             background-color: rgba(208, 208, 208, 0);
         }
+
     </style>
 
 </head>
 
 <body>
-<div class="jumbotron jumbotron_bgc">
-    <div class="container-fluid">
-        <nav class="navbar navbar-fixed-top navbar-transparent">
-            <a class="blog-nav-item active" href="{% url 'index' %}">Home</a>
-            <a class="blog-nav-item" href="{% url 'blogs_with_date' %}">Archives</a>
-            <a class="blog-nav-item" href="{% url 'blogs_with_type' %}">Category</a>
-            <a class="blog-nav-item" href="">About</a>
-            {% if not user.is_authenticated %}
-                <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">
-                    <a class="blog-nav-item" href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a>
-                    <a class="blog-nav-item" href="{% url 'register' %}">Register</a>
-                </div>
-            {% else %}
-                <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">
-                    <a class="blog-nav-item dropdown-toggle" href="https://v3.bootcss.com/examples/blog/#"
-                       data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false" id="personal">{{ user.username }}<span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="personal-nav" style="border: 0">
-                        <li><a href="{% url 'personal_info' %}" style="height: 50px;line-height: 50px;">个人信息</a></li>
-                        <li><a href="{% url 'logout' %}" style="height: 50px;line-height: 50px;">Logout</a></li>
-                    </ul>
-                </div>
-            {% endif %}
 
 
-        </nav>
-        <div class="blog-header text-center" id="head_title" style="color: #fff">
-            <div>
-                {% block blog_head %}
+<div class="jumbotron jumbotron_bgc" style="padding-top: 0" id="jumbotron_bgc">
+    <nav class="navbar navbar-transparent">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed " data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false" style="background-color: rgba(171,171,171,0.3);" id="mobile-nav">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
 
-                {% endblock %}
             </div>
 
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="nav navbar-nav">
+                    <a class="blog-nav-item active" href="{% url 'index' %}">Home</a>
+                    <a class="blog-nav-item" href="{% url 'blogs_with_date' %}">Archives</a>
+                    <a class="blog-nav-item" href="{% url 'blogs_with_type' %}">Category</a>
+                    <a class="blog-nav-item" href="">About</a>
+                </div>
+                <div class="nav navbar-nav navbar-right">
+                    {% if not user.is_authenticated %}
+                        <a class="blog-nav-item" href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a>
+                        <a class="blog-nav-item" href="{% url 'register' %}">Register</a>
+                    {% else %}
+                        <a class="blog-nav-item dropdown-toggle" href="https://v3.bootcss.com/examples/blog/#"#}
+                           data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false" id="personal">{{ user.username }}<span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="personal-nav">
+                            <li><a href="{% url 'personal_info' %}">个人信息</a>
+                            </li>
+                            <li><a href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container-fluid">
 
-        </div>
+        {#        <nav class="navbar navbar-fixed-top navbar-transparent">#}
+        {#                <a class="blog-nav-item active" href="{% url 'index' %}">Home</a>#}
+        {#                <a class="blog-nav-item" href="{% url 'blogs_with_date' %}">Archives</a>#}
+        {#                <a class="blog-nav-item" href="{% url 'blogs_with_type' %}">Category</a>#}
+        {#                <a class="blog-nav-item" href="">About</a>#}
+        {#                {% if not user.is_authenticated %}#}
+        {#                    <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">#}
+        {#                        <a class="blog-nav-item" href="{% url 'login' %}?next={{ request.get_full_path }}">Login</a>#}
+        {#                        <a class="blog-nav-item" href="{% url 'register' %}">Register</a>#}
+        {#                    </div>#}
+        {#                {% else %}#}
+        {#                    <div class="nav navbar-nav navbar-right" style="margin-right: 10px;">#}
+        {#                        <a class="blog-nav-item dropdown-toggle" href="https://v3.bootcss.com/examples/blog/#"#}
+        {#                           data-toggle="dropdown" role="button" aria-haspopup="true"#}
+        {#                           aria-expanded="false" id="personal">{{ user.username }}<span class="caret"></span></a>#}
+        {#                        <ul class="dropdown-menu" id="personal-nav" style="border: 0">#}
+        {#                            <li><a href="{% url 'personal_info' %}" style="height: 50px;line-height: 50px;">个人信息</a>#}
+        {#                            </li>#}
+        {#                            <li><a href="{% url 'logout' %}" style="height: 50px;line-height: 50px;">Logout</a></li>#}
+        {#                        </ul>#}
+        {#                    </div>#}
+        {#                {% endif %}#}
+        {#        #}
+        {##}
+        {##}
+        {#        </nav>#}
+        {#        <div class="blog-header text-center" id="head_title" style="color: #fff">#}
+        {#            <div>#}
+        {#                {% block blog_head %}#}
+        {##}
+        {#                {% endblock %}#}
+        {#            </div>#}
+        {##}
+        {##}
+        {#        </div>#}
     </div>
+
+
 </div>
 
 <div class="container">
