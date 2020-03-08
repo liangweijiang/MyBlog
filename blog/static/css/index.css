@@ -23,15 +23,16 @@ a:hover {
 #head_title {
     line-height: 500px;
     margin-top: 100px;
+    
 }
 #bs-example-navbar-collapse-1 > div:nth-child(1) > a.blog-nav-item{
     font-size: 16px;
-    margin-right: 8px;
+    margin-right: 15px;
 }
 
 #bs-example-navbar-collapse-1 > div.nav.navbar-nav.navbar-right > a{
     font-size: 16px;
-    margin-left: 8px;
+    margin-left: 15px;
 }
 
 #mobile-nav>span{
