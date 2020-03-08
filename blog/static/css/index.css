@@ -92,12 +92,10 @@ a:hover {
     /*top: 39px;*/
     /*right: -58px;*/
 /*}*/
-#personal-nav li{
+#personal-nav>li{
     text-align: right;
 }
-
-
-#personal-nav li > a{
+#personal-nav>li> a{
     height: 50px;
     line-height: 50px;
     color: rgb(230, 230, 230);
