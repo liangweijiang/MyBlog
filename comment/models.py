@@ -33,16 +33,18 @@ class Comment(models.Model):
 
     def send_email(self):
         if self.parent is None:
-            subject = '有人评论你的博客'
+            subject = "[来自梁伟江的博客]有人评论你的博客"
             email = self.content_object.get_email()
         else:
-            subject = '有人回复你的评论'
-            email = self.parent.content_object.get_email()
+            subject = "[来自梁伟江的博客]有人回复你的评论"
+            email = self.parent.user.email
+
+        print('====', self.parent)
+        print('--------.', email)
         if email != '':
             context = {}
             context['comment_text'] = self.text
             context['url'] = self.content_object.get_url()
-            print('--------->', self.text, self.content_object.get_url())
             text = render(None, 'send_email.html', context).content.decode('utf-8')
             send_mail = SendEmail(subject, text, email)
             send_mail.start()

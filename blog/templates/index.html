@@ -19,7 +19,7 @@
                 <ul class="blog-info-description "></ul>
 
                 <p class="blog-post-meta"><a href="{% url 'blog_detail' blog.pk %}" style="color: #999999"
-                                             id="blog-info">{{ blog.content|truncatechars:380 }}</a></p>
+                                             id="blog-info">{{ blog.content|truncatechars:300 }}</a></p>
                 <p class="blog-post-meta">
                     {% if blog.blog_type %}
                         <a href="{% url 'blogs_with_type' %}#{{ blog.blog_type }}" class="pull-right">
