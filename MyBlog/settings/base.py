@@ -103,7 +103,7 @@ USE_L10N = False
 USE_TZ = False
 
 # 在页面上时间的显示格式
-DATETIME_FORMAT = 'Y-m-d H:i:s'
+DATETIME_FORMAT = 'Y-m-d'
 
 DATE_FORMAT = 'Y-m-d'
 
