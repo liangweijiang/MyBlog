@@ -28,12 +28,13 @@ class Blog(models.Model, ReadNumExpandMethod):
     created_time = models.DateTimeField(auto_now_add=True)
     last_updated_time = models.DateTimeField(auto_now_add=True)
     read_nums = GenericRelation(ReadNum)
+    sticky = models.IntegerField(default=0)
 
     def __str__(self):
         return '<{}>'.format(self.title)
 
     class Meta:
-        ordering = ['-created_time']
+        ordering = ['-sticky', '-last_updated_time', '-created_time']
 
     def get_url(self):
         return reverse('blog_detail', kwargs={'blog_pk': self.pk})

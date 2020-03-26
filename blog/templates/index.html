@@ -12,10 +12,11 @@
 {% block blog_content %}
 
     <div class="col-sm-9 blog-main">
+
         {% for blog in blogs %}
             <div class="blog-post page-header">
-
-                <h6 class="blog-post-title"><a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h6>
+                <h6 class="blog-post-title">{% if blog.sticky == 1 %}
+                    [置顶]&nbsp;{% endif %} <a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h6>
                 <ul class="blog-info-description "></ul>
 
                 <p class="blog-post-meta"><a href="{% url 'blog_detail' blog.pk %}" style="color: #999999"
