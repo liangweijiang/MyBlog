@@ -15,7 +15,7 @@
 
         {% for blog in blogs %}
             <div class="blog-post page-header">
-                <h6 class="blog-post-title">{% if blog.sticky == 1 %}
+                <h6 class="blog-post-title">{% if blog.sticky > 0 %}
                     [置顶]&nbsp;{% endif %} <a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h6>
                 <ul class="blog-info-description "></ul>
 
